@@ -1,0 +1,54 @@
+
+def getObjectJson(fileUrl,strContent,allFilelist,allUrlList,bascList):
+	contentList = []
+	# if fileUrl.find("PurchaseDetail")>-1:
+	# 	print(fileUrl)
+	with open(fileUrl,"r+",encoding="utf-8") as f:
+		for obj in f:
+			obj = obj.strip()
+			if obj.find(";")>-1 and obj.find("static") == -1 and obj.find("//") == -1:
+				if obj.find("private") > -1 or obj.find("protected")>-1:
+					obj = obj.replace(";","")
+					objDc = []
+					objectD = {}
+					for obj1 in  obj.split(" "):
+						if obj1.replace(" ","") != "":
+							objDc.append(obj1)
+					if len(objDc)>=3:
+						objectD["type"] = objDc[1]
+						objectD["name"] = objDc[2]
+					contentList.append(objectD)
+	# if fileUrl.find("PurchaseDetail")>-1:
+	# 	print(contentList)
+	index = 0
+	for obj in contentList:
+		index = index + 1
+		if obj.get("type") in bascList:
+			strContent[obj.get("name")] = obj.get("type")
+		else:
+			objName = str(obj.get("type"))+".java"
+			if objName in allFilelist:
+				filepath = allUrlList[allFilelist.index(objName)]
+				newStrDict = {}
+				strContent[obj.get("name")] = getObjectJson(filepath,newStrDict,allFilelist,allUrlList,bascList)
+			else:
+			 	arrAyName = str(obj.get("type")).replace("List<","").replace(">","").replace("[]","").strip()+".java"
+			 	if arrAyName in allFilelist:
+			 		filepath = allUrlList[allFilelist.index(arrAyName)]
+			 		newStrDict = {}
+			 		strContent[obj.get("name")] = []
+			 		strContent[obj.get("name")].append(getObjectJson(filepath,newStrDict,allFilelist,allUrlList,bascList))
+			 		# print(arrAyName,obj)
+		if strContent.get(obj.get("name")) == {}:
+			strContent[obj.get("name")] = ""
+
+	return strContent
+
+fileUrl = "H:\\java_wlw\\test\\orderform-srv\\src\\main\\java\\com\\bw\\ae\\iot\\orderform_srv\\service\\bean\\Order.java"
+filepath,fullflname = os.path.split(fileUrl)
+strContent = {}
+allFilelist,allUrlList = print_all_file_path(filepath.split("src\\")[0])
+
+bascList = ["Byte","Short","Integer","Long","Float","Double","Character","Boolean","Date","byte", "short", "int", "long", "float", "double", "char", "boolean"]
+strd = getObjectJson(fileUrl,strContent,allFilelist,allUrlList,bascList)
+print(json.dumps(strd))

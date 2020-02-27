@@ -1,0 +1,63 @@
+# -*- coding: utf-8 -*-ahello world
+import sys, os
+from pynput.keyboard import Controller, Key, Listener
+from pynput import keyboard
+import time
+import win32api
+# from tkinter import *
+import easygui as g
+import pyperclip
+import pyautogui
+
+firstKey = None
+secondKey = None
+keyLong = ""
+copyFlag = False
+anYanFirst = None
+anYanSecond = None
+
+#得到键入的值
+def get_key_name(key):
+    pass
+
+
+    return str(key)
+#win32api.SendMessage(hwnd,win32con.WM_CLOSE,0,0)
+# 监听按压
+def on_press(key):
+    global anYanFirst,anYanSecond,copyFlag
+    keyValue = ""
+    try:
+        keyValue = key.char
+    except Exception as e:
+        keyValue = str(key)
+    if anYanFirst == None:
+        anYanFirst = keyValue
+    if anYanFirst != None and anYanSecond == None:
+        if keyValue != anYanFirst:
+            anYanSecond = keyValue
+    if anYanFirst != None and anYanSecond != None:
+        if anYanSecond != anYanFirst and anYanFirst != keyValue:
+            anYanSecond = anYanFirst
+            anYanFirst =  keyValue
+    # print(anYanFirst)
+    # print(anYanSecond)
+    if anYanFirst== "Key.ctrl_l" and anYanSecond == "Key.space":
+        copyFlag = True
+        print("复制开始")
+    if anYanFirst== "Key.space" and anYanSecond == "Key.ctrl_l":
+        copyFlag = True
+        print("复制开始")
+
+# 监听释放
+def on_release(key):
+    pass
+
+# 开始监听
+def start_listen():
+    with Listener(on_press=on_press,on_release=on_release) as listener:
+        listener.join()
+
+if __name__ == '__main__':
+    # 开始监听,按esc退出监听
+    start_listen()

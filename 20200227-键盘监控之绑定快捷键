@@ -36,18 +36,20 @@ def on_press(key):
     if anYanFirst != None and anYanSecond == None:
         if keyValue != anYanFirst:
             anYanSecond = keyValue
-    if anYanFirst != None and anYanSecond != None:
-        if anYanSecond != anYanFirst and anYanFirst != keyValue:
-            anYanSecond = anYanFirst
-            anYanFirst =  keyValue
-    # print(anYanFirst)
-    # print(anYanSecond)
     if anYanFirst== "Key.ctrl_l" and anYanSecond == "Key.space":
         copyFlag = True
+        anYanFirst= None
+        anYanSecond = None
         print("复制开始")
-    if anYanFirst== "Key.space" and anYanSecond == "Key.ctrl_l":
-        copyFlag = True
-        print("复制开始")
+    if anYanFirst != None and anYanSecond != None:
+        anYanFirst= None
+        anYanSecond = None
+    if copyFlag:
+        copyFlag = False
+        ret = g.choicebox(msg="功能选择",choices=["不错","还行"])
+        print(ret)
+
+
 
 # 监听释放
 def on_release(key):
